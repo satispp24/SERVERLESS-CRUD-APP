@@ -8,6 +8,8 @@ A comprehensive enterprise-grade serverless CRUD application built with AWS serv
 
 ### High-Level Architecture
 
+![High-Level Architecture](High-Level%20Architecture.png)
+
 ```
                     ┌─────────────────────────────────────────────────────────┐
                     │                 AWS CLOUD                               │
