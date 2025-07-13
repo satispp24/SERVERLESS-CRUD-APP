@@ -128,7 +128,7 @@ A comprehensive enterprise-grade serverless CRUD application built with AWS serv
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/satispp24/SERVERLESS-CRUD-APP.git
 cd terraform-crud-app
 
 # Initialize Terraform
@@ -302,16 +302,57 @@ DynamoDB Table:
 ### Base URL
 After deployment, your API will be available at:
 ```
-https://{api-id}.execute-api.{region}.amazonaws.com/prod
+https://{api-id}.execute-api.{region}.amazonaws.com/{stage}
 ```
 
-### API Endpoints
+### Testing with Postman
+
+#### Postman Collection Setup
+
+##### 1. GET All Items
+- **Method**: GET
+- **URL**: `https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items`
+- **Headers**: None required
+
+##### 2. POST Create Item
+- **Method**: POST
+- **URL**: `https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items`
+- **Headers**: `Content-Type: application/json`
+- **Body** (raw JSON):
+```json
+{
+  "name": "Test Item",
+  "description": "This is a test item"
+}
+```
+
+##### 3. GET Single Item
+- **Method**: GET
+- **URL**: `https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items/{item-id}`
+- Replace `{item-id}` with actual ID from create response
+
+##### 4. PUT Update Item
+- **Method**: PUT
+- **URL**: `https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items/{item-id}`
+- **Headers**: `Content-Type: application/json`
+- **Body** (raw JSON):
+```json
+{
+  "name": "Updated Item",
+  "description": "Updated description"
+}
+```
+
+##### 5. DELETE Item
+- **Method**: DELETE
+- **URL**: `https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items/{item-id}`
+
+### cURL Examples
 
 #### 1. Create Item
 ```bash
-# Create a new item
 curl -X POST \
-  https://your-api-url/prod/items \
+  https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items \
   -H 'Content-Type: application/json' \
   -d '{
     "name": "Sample Item",
@@ -332,9 +373,8 @@ curl -X POST \
 
 #### 2. Get All Items
 ```bash
-# Get all items (with optional pagination)
 curl -X GET \
-  'https://your-api-url/prod/items?limit=10&lastKey=eyJpZCI6IjEyMyJ9'
+  "https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items?limit=10"
 ```
 
 **Response:**
@@ -349,23 +389,20 @@ curl -X GET \
       "updated_at": "2024-01-15T10:30:00Z"
     }
   ],
-  "lastKey": "eyJpZCI6IjEyMyJ9",
   "count": 1
 }
 ```
 
 #### 3. Get Single Item
 ```bash
-# Get item by ID
 curl -X GET \
-  https://your-api-url/prod/items/123e4567-e89b-12d3-a456-426614174000
+  "https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items/123e4567-e89b-12d3-a456-426614174000"
 ```
 
 #### 4. Update Item
 ```bash
-# Update existing item
 curl -X PUT \
-  https://your-api-url/prod/items/123e4567-e89b-12d3-a456-426614174000 \
+  "https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items/123e4567-e89b-12d3-a456-426614174000" \
   -H 'Content-Type: application/json' \
   -d '{
     "name": "Updated Item Name",
@@ -375,50 +412,28 @@ curl -X PUT \
 
 #### 5. Delete Item
 ```bash
-# Delete item by ID
 curl -X DELETE \
-  https://your-api-url/prod/items/123e4567-e89b-12d3-a456-426614174000
+  "https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items/123e4567-e89b-12d3-a456-426614174000"
 ```
 
 ### Error Responses
 
 ```json
 {
-  "error": "Item not found",
-  "message": "The requested item does not exist",
-  "statusCode": 404
+  "error": "Item not found"
 }
 ```
 
-### Legacy API Support
+```json
+{
+  "error": "Request body is required"
+}
+```
 
-For backward compatibility, the original single-endpoint API is also supported:
-
-```bash
-# Legacy create operation
-curl -X POST \
-  https://your-api-url/prod/DynamoDBManager \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "operation": "create",
-    "tableName": "crud-items",
-    "payload": {
-      "Item": {
-        "id": "custom-id",
-        "name": "Legacy Item"
-      }
-    }
-  }'
-
-# Legacy list operation
-curl -X POST \
-  https://your-api-url/prod/DynamoDBManager \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "operation": "list",
-    "tableName": "crud-items",
-    "payload": {}
-  }'
+```json
+{
+  "error": "TABLE_NAME environment variable not set"
+}
 ```
 
 ## Data Flow Diagrams
@@ -582,14 +597,17 @@ terraform-crud-app/
 
 ### Terraform Commands
 ```bash
+# Navigate to terraform directory
+cd terrraform
+
 # Initialize Terraform
 terraform init
 
 # Plan deployment
-terraform plan -var-file="environments/dev.tfvars"
+terraform plan
 
 # Apply changes
-terraform apply -var-file="environments/dev.tfvars"
+terraform apply
 
 # Validate configuration
 terraform validate
@@ -601,7 +619,7 @@ terraform fmt -recursive
 terraform show
 
 # Clean up resources
-terraform destroy -var-file="environments/dev.tfvars"
+terraform destroy
 ```
 
 ## Testing Strategy
