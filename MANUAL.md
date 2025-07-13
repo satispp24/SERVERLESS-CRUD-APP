@@ -103,7 +103,7 @@ aws sts get-caller-identity
 ```bash
 # 1. Clone and navigate to project
 git clone <repository-url>
-cd terraform-crud-app
+cd terraform-crud-app/terrraform
 
 # 2. Initialize Terraform
 terraform init
@@ -117,12 +117,15 @@ terraform apply
 
 #### Production Deployment
 ```bash
-# 1. Configure environment variables
+# 1. Navigate to terraform directory
+cd terraform-crud-app/terrraform
+
+# 2. Configure environment variables (optional)
 cp terraform.tfvars.example terraform.tfvars
 nano terraform.tfvars
 
-# 2. Deploy with custom configuration
-terraform apply -var-file="terraform.tfvars"
+# 3. Deploy with configuration
+terraform apply
 ```
 
 ### 3.3 Environment Configuration
@@ -153,7 +156,7 @@ enable_xray_tracing = true
 ## 4. API Documentation
 
 ### 4.1 Base Configuration
-- **Base URL**: `https://{api-id}.execute-api.{region}.amazonaws.com/dev`
+- **Base URL**: `https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev`
 - **Content-Type**: `application/json`
 - **Authentication**: None (can be extended)
 
@@ -165,40 +168,50 @@ POST /items
 Content-Type: application/json
 
 {
-  "tableName": "crud-items",
-  "item": {
-    "name": "Product Name",
-    "description": "Product description",
-    "price": 99.99,
-    "category": "electronics"
-  }
+  "name": "Product Name",
+  "description": "Product description",
+  "price": 99.99,
+  "category": "electronics"
 }
 ```
 
 **Response (201 Created):**
 ```json
 {
-  "statusCode": 201,
-  "body": {
-    "id": "generated-uuid",
-    "name": "Product Name",
-    "description": "Product description",
-    "price": 99.99,
-    "category": "electronics",
-    "createdAt": "2025-01-13T14:30:00Z",
-    "updatedAt": "2025-01-13T14:30:00Z"
-  }
+  "id": "generated-uuid",
+  "name": "Product Name",
+  "description": "Product description",
+  "price": 99.99,
+  "category": "electronics",
+  "created_at": "2025-01-13T14:30:00Z",
+  "updated_at": "2025-01-13T14:30:00Z"
 }
 ```
 
 #### Read All Items
 ```http
-GET /items?tableName=crud-items&operation=scan
+GET /items
+```
+
+**Response (200 OK):**
+```json
+{
+  "items": [
+    {
+      "id": "item-uuid",
+      "name": "Product Name",
+      "description": "Product description",
+      "created_at": "2025-01-13T14:30:00Z",
+      "updated_at": "2025-01-13T14:30:00Z"
+    }
+  ],
+  "count": 1
+}
 ```
 
 #### Read Single Item
 ```http
-GET /items/{id}?tableName=crud-items
+GET /items/{id}
 ```
 
 #### Update Item
@@ -207,21 +220,44 @@ PUT /items/{id}
 Content-Type: application/json
 
 {
-  "tableName": "crud-items",
-  "id": "item-id",
-  "item": {
-    "name": "Updated Name",
-    "price": 149.99
-  }
+  "name": "Updated Name",
+  "price": 149.99
 }
 ```
 
 #### Delete Item
 ```http
-DELETE /items/{id}?tableName=crud-items
+DELETE /items/{id}
 ```
 
-### 4.3 Error Responses
+### 4.3 Testing with Postman
+
+#### Collection Setup
+1. **Create Item**
+   - Method: POST
+   - URL: `https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items`
+   - Headers: `Content-Type: application/json`
+   - Body: `{"name": "Test Item", "description": "Test description"}`
+
+2. **Get All Items**
+   - Method: GET
+   - URL: `https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items`
+
+3. **Get Single Item**
+   - Method: GET
+   - URL: `https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items/{item-id}`
+
+4. **Update Item**
+   - Method: PUT
+   - URL: `https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items/{item-id}`
+   - Headers: `Content-Type: application/json`
+   - Body: `{"name": "Updated Item", "description": "Updated description"}`
+
+5. **Delete Item**
+   - Method: DELETE
+   - URL: `https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items/{item-id}`
+
+### 4.4 Error Responses
 
 | Status Code | Description | Example |
 |-------------|-------------|---------|
@@ -339,9 +375,15 @@ lambda_timeout = 30
 #### API Testing
 ```bash
 # Test API endpoints with curl
-curl -X POST https://api-url/dev/items \
+curl -X POST https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items \
   -H "Content-Type: application/json" \
-  -d '{"tableName":"crud-items","item":{"name":"test"}}'
+  -d '{"name":"test","description":"test item"}'
+
+# Test GET all items
+curl -X GET https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items
+
+# Test GET single item
+curl -X GET https://g2tz8qj236.execute-api.us-east-1.amazonaws.com/dev/items/{item-id}
 ```
 
 ---
