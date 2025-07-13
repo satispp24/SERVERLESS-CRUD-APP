@@ -1,0 +1,20 @@
+# Example Terraform variables file
+# Copy this file to terraform.tfvars and modify the values as needed
+
+# AWS region where resources will be created
+aws_region = "us-east-1"
+
+# Project name - used as prefix for resource names
+project_name = "crud-app"
+
+# Environment name - used for tagging and stage naming
+environment = "dev"
+
+# DynamoDB table name
+table_name = "crud-items"
+
+# Example for production environment:
+# aws_region = "us-west-2"
+# project_name = "my-production-crud"
+# environment = "prod"
+# table_name = "production-items"
