@@ -49,10 +49,10 @@ cd terraform-crud-app
 terraform init
 
 # Plan deployment
-terraform plan -var-file="environments/dev.tfvars"
+terraform plan 
 
 # Deploy infrastructure
-terraform apply -var-file="environments/dev.tfvars"
+terraform apply 
 
 # Get API Gateway URL
 terraform output api_gateway_url
